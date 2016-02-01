@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-merge="true">
+	<!-- 配置文件的路径 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:filePath.properties</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 类Bean。注意：这里的propertyName的名字要和类中的属性一致。不然会报错 -->
+	<bean id="propertiesModel" class="com.minafile.model.PropertiesModel">       
+	    <property name="bjsyPath" value="${bjsyPath}" />      
+	    <property name="sdhlPath" value="${sdhlPath}" />      
+	    <property name="jcjtPath" value="${jcjtPath}" />      
+	    <property name="bjsy" value="${bjsy}" />      
+	    <property name="sdhl" value="${sdhl}" />      
+	</bean> 
+</beans>
