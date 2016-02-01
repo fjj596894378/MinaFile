@@ -1,5 +1,10 @@
 package com.minafile.model;
 
+/**
+ * 配置文件的model类。
+ * @author king_fu
+ *
+ */
 public class PropertiesModel {
 	private String bjsyPath;
 	private String sdhlPath;
