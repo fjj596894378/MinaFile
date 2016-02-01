@@ -1,22 +1,3 @@
-/*
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- *
- */
 package com.minafile.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -28,10 +9,9 @@ import org.apache.mina.filter.codec.demux.MessageDecoderResult;
 import com.minafile.model.AbstractMessage;
 
 /**
- * A {@link MessageDecoder} that decodes message header and forwards
- * the decoding of body to a subclass.
+ * 父类解码
+ * @author king_fu
  *
- * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public abstract class AbstractMessageDecoder implements MessageDecoder {
     private final int type;
@@ -45,36 +25,35 @@ public abstract class AbstractMessageDecoder implements MessageDecoder {
     }
 
     public MessageDecoderResult decodable(IoSession session, IoBuffer in) {
-        // Return NEED_DATA if the whole header is not read yet.
+    	// 判断是否符合最小的头长度。一个short+一个int类型。
+    	/**
+    	 *  // 编码头
+         * 	   buf.putShort((short) type);
+         *     buf.putInt(message.getSequence());
+    	 */
         if (in.remaining() < Constants.HEADER_LEN) {
             return MessageDecoderResult.NEED_DATA;
         }
-
-        // Return OK if type and bodyLength matches.
         if (type == in.getShort()) {
             return MessageDecoderResult.OK;
         }
-
-        // Return NOT_OK if not matches.
         return MessageDecoderResult.NOT_OK;
     }
 
     public MessageDecoderResult decode(IoSession session, IoBuffer in,
             ProtocolDecoderOutput out) throws Exception {
-        // Try to skip header if not read.
+         
         if (!readHeader) {
-            in.getShort(); // Skip 'type'.
-            sequence = in.getInt(); // Get 'sequence'.
+            in.getShort();  
+            sequence = in.getInt(); 
             readHeader = true;
         }
 
-        // Try to decode body
         AbstractMessage m = decodeBody(session, in);
-        // Return NEED_DATA if the body is not fully read.
         if (m == null) {
             return MessageDecoderResult.NEED_DATA;
         } else {
-            readHeader = false; // reset readHeader for the next decode
+            readHeader = false;  
         }
         m.setSequence(sequence);
         out.write(m);
@@ -82,10 +61,12 @@ public abstract class AbstractMessageDecoder implements MessageDecoder {
         return MessageDecoderResult.OK;
     }
 
+  
     /**
-     * @param session The current session
-     * @param in The incoming buffer
-     * @return <tt>null</tt> if the whole body is not read yet
+     * 模版方法
+     * @param session 当前的session
+     * @param in 输入流
+     * @return	如果对象没有读完返回null
      */
     protected abstract AbstractMessage decodeBody(IoSession session,
             IoBuffer in);

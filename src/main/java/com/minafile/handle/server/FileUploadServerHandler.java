@@ -1,5 +1,7 @@
 package com.minafile.handle.server;
 
+import java.util.Random;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -11,13 +13,14 @@ import com.minafile.model.ResultMessage;
 
 /**
  * 这个处理类是在服务器接收到了客户端发来的消息时，对客户端的消息进行处理。
+ * 
  * @author king_fu
- *
+ * 
  */
-public class FileUploadServerHandle extends IoHandlerAdapter {
+public class FileUploadServerHandler extends IoHandlerAdapter {
 
 	private final static Logger LOGGER = LoggerFactory
-			.getLogger(FileUploadServerHandle.class);
+			.getLogger(FileUploadServerHandler.class);
 
 	@Override
 	public void sessionOpened(IoSession session) {
@@ -29,11 +32,11 @@ public class FileUploadServerHandle extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message) {
 		// message为客户端发来的消息。
 		Message am = (Message) message;
-
-		LOGGER.info(am.toString());
+		 
 		ResultMessage rm = new ResultMessage();
 		rm.setSequence(am.getSequence());  
-		rm.setOk(false);
+		rm.setOk(true);
+		rm.setValue(new Random().nextInt(10));
 		session.write(rm);
 	}
 
