@@ -1,22 +1,3 @@
-/*
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- *
- */
 package com.minafile.client;
 
 import java.net.InetSocketAddress;
@@ -30,58 +11,51 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import com.minafile.codec.UploadFileProtocolCodecFactory;
+import com.minafile.handle.client.FileStreamClientHandler;
 import com.minafile.handle.client.FileUploadClientHandler;
 
 /**
- * (<strong>Entry Point</strong>) Starts SumUp client.
+ * 客户端
+ * @author king_fu
  *
- * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public class Client {
     private static final String HOSTNAME = "localhost";
 
     private static final int PORT = 8080;
 
-    private static final long CONNECT_TIMEOUT = 30*1000L; // 30 seconds
+    private static final long CONNECT_TIMEOUT = 30*1000L; // 30秒
 
-    // Set this to false to use object serialization instead of custom codec.
-    private static final boolean USE_CUSTOM_CODEC = true;
+    private static final boolean USE_CUSTOM_CODEC = true; // 是否是自定义的编码
 
     public static void main(String[] args) throws Throwable {
-         /*if (args.length == 0) {
-            System.out.println("Please specify the list of any integers");
-            return;
-        }*/
-       
-        // prepare values to sum up
         int[] values = new int[50];
         for(int i = 0;i< 50;++i){
         	values[i] = i;
         }
-        
-       /* for (int i = 0; i < args.length; i++) {
-            values[i] = Integer.parseInt(args[i]);
-        }
-*/
         NioSocketConnector connector = new NioSocketConnector();
 
-        // Configure the service.
         connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
         if (USE_CUSTOM_CODEC) {
             connector.getFilterChain().addLast(
                     "codec",
                     new ProtocolCodecFilter(
                             new UploadFileProtocolCodecFactory(false)));
+            connector.getFilterChain().addLast("logger", new LoggingFilter());
+
+            connector.setHandler(new FileUploadClientHandler(values));
+
         } else {
             connector.getFilterChain().addLast(
                     "codec",
                     new ProtocolCodecFilter(
                             new ObjectSerializationCodecFactory()));
+            
+            connector.getFilterChain().addLast("logger", new LoggingFilter());
+
+            connector.setHandler(new FileStreamClientHandler());
         }
-        connector.getFilterChain().addLast("logger", new LoggingFilter());
-
-        connector.setHandler(new FileUploadClientHandler(values));
-
+       
         IoSession session;
         for (;;) {
             try {
@@ -91,15 +65,12 @@ public class Client {
                 session = future.getSession();
                 break;
             } catch (RuntimeIoException e) {
-                System.err.println("Failed to connect.");
                 e.printStackTrace();
                 Thread.sleep(5000);
             }
         }
 
-        // wait until the summation is done
         session.getCloseFuture().awaitUninterruptibly();
-        
         connector.dispose();
     }
 }

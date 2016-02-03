@@ -24,8 +24,8 @@ public class FileUploadServerHandler extends IoHandlerAdapter {
 
 	@Override
 	public void sessionOpened(IoSession session) {
-		// 设置空闲时间为60秒
-		session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60);
+		// 设置空闲时间为10秒
+		session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 	}
 
 	@Override

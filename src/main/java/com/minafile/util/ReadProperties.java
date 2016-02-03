@@ -10,7 +10,5 @@ public class ReadProperties {
 	public static void main(String[] args) {
 		// 读取bean。
 		PropertiesModel d = (PropertiesModel) context.getBean("propertiesModel");
-		System.out.println(d.getBjsy());
-		System.out.println(d.getBjsyPath());
 	}
 }

@@ -2,7 +2,6 @@ package com.minafile.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.demux.MessageEncoder;
 
 import com.minafile.model.ResultMessage;
 

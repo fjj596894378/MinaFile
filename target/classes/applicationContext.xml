@@ -11,10 +11,6 @@
     </bean>
     <!-- 类Bean。注意：这里的propertyName的名字要和类中的属性一致。不然会报错 -->
 	<bean id="propertiesModel" class="com.minafile.model.PropertiesModel">       
-	    <property name="bjsyPath" value="${bjsyPath}" />      
-	    <property name="sdhlPath" value="${sdhlPath}" />      
-	    <property name="jcjtPath" value="${jcjtPath}" />      
-	    <property name="bjsy" value="${bjsy}" />      
-	    <property name="sdhl" value="${sdhl}" />      
+	    <property name="serverFilePath" value="${serverFilePath}" />    
 	</bean> 
 </beans>

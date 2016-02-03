@@ -6,39 +6,14 @@ package com.minafile.model;
  *
  */
 public class PropertiesModel {
-	private String bjsyPath;
-	private String sdhlPath;
-	private String jcjtPath;
-	private String bjsy;
-	private String sdhl;
-	public String getBjsyPath() {
-		return bjsyPath;
+	private String serverFilePath; // 服务器保存文件路径
+
+	public String getServerFilePath() {
+		return serverFilePath;
 	}
-	public void setBjsyPath(String bjsyPath) {
-		this.bjsyPath = bjsyPath;
+
+	public void setServerFilePath(String serverFilePath) {
+		this.serverFilePath = serverFilePath;
 	}
-	public String getSdhlPath() {
-		return sdhlPath;
-	}
-	public void setSdhlPath(String sdhlPath) {
-		this.sdhlPath = sdhlPath;
-	}
-	public String getJcjtPath() {
-		return jcjtPath;
-	}
-	public void setJcjtPath(String jcjtPath) {
-		this.jcjtPath = jcjtPath;
-	}
-	public String getBjsy() {
-		return bjsy;
-	}
-	public void setBjsy(String bjsy) {
-		this.bjsy = bjsy;
-	}
-	public String getSdhl() {
-		return sdhl;
-	}
-	public void setSdhl(String sdhl) {
-		this.sdhl = sdhl;
-	}
+	
 }
