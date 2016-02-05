@@ -13,12 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.minafile.model.ByteReturnFileMessage;
 
 /**
- * 这个是服务器对客户端发来的消息进行解码
- * 继承CumulativeProtocolDecoder
- * 实现doDecode
- * 父类会将数据读取完之后，再调用实现的方法doDecode。
- * 如果成功读取完之后，服务器会去Handle中进行业务处理。
- * 对发来的文件进行业务处理，比如说保存之类的 动作。
+ * 这个是服务器对返回客户端的消息进行编码。
  * @author king_fu
  *
  */

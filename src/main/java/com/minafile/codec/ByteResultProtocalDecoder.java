@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.minafile.model.ByteReturnFileMessage;
 
 /**
- * 这是客户端对服务器发来的消息进行解码 消息封装在ByteReturnFileMessage实体中。 在解析完之后，调用客户端定义的Handle
+ * 这是客户端对服务器发来的消息进行解码 消息封装在ByteReturnFileMessage实体中。 
+ * 在解析完之后，调用客户端定义的Handle
  * handle中的方法messageReceived 在方法中进行处理。
  * 
  * @author king_fu

@@ -3,7 +3,7 @@ package com.minafile.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext; 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.minafile.exception.MyRuntimeException;
 import com.minafile.model.PropertiesModel;

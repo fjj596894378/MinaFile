@@ -7,8 +7,8 @@ package com.minafile.model;
  */
 public class PropertiesModel {
 	private String serverFilePath; // 服务器保存文件路径
-	private String clientFilePath; // 服务器保存文件路径
-	private String clientFileName; // 服务器保存文件路径
+	private String clientFilePath; // 客户端发送文件目录
+	private String clientFileName; // 客户端发送文件名
 
 	public String getServerFilePath() {
 		return serverFilePath;

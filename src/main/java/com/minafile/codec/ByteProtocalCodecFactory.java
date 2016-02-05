@@ -5,6 +5,12 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
+/**
+ * 编码解码类工厂。
+ * 注意服务器和客户端需要的编码解码是不同的。
+ * @author king_fu
+ *
+ */
 public class ByteProtocalCodecFactory  implements ProtocolCodecFactory {
 	
 	public ByteProtocalCodecFactory(boolean isServer){

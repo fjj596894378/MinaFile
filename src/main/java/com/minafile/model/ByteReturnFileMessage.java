@@ -8,7 +8,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 /**
  * 文件消息
- * 服务器接受的消息(即客户端发送的消息)
+ * 服务器发送的消息(即客户端接收的消息)
  * @author king_fu
  *
  */
@@ -48,6 +48,4 @@ public class ByteReturnFileMessage implements Serializable{
 	public void setReturnMassageLength(int returnMassageLength) {
 		this.returnMassageLength = returnMassageLength;
 	}
-	
-	
 }

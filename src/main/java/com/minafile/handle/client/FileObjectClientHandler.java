@@ -13,30 +13,40 @@ import com.minafile.model.ByteReturnFileMessage;
 import com.minafile.model.PropertiesModel;
 import com.minafile.util.ReadProperties;
 
+/**
+ * 客户端如果添加了自定义编码解码类
+ * 那么，在发送给服务器的时候，信息会先经过编码器(类)
+ * 然后再发送给服务器；
+ * 
+ * 如果实现了解码器，那么在服务器发送信息过来之后，
+ * 就会先调用解码器。然后再进行业务处理
+ * @author king_fu
+ *
+ */
 public class FileObjectClientHandler extends IoHandlerAdapter {
 
-	private static final  Logger LOGGER = LoggerFactory.getLogger(FileObjectClientHandler.class);
- 
-
-
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(FileObjectClientHandler.class);
 
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
-		
+
 		ByteFileMessage bfm = new ByteFileMessage();
 		PropertiesModel pm = ReadProperties.getModel();
-		if(!(new File(pm.getClientFilePath()).isDirectory())){
+		if (!(new File(pm.getClientFilePath()).isDirectory())) {
 			// 如果不是目录
 			LOGGER.debug("当前目录：" + pm.getClientFilePath());
 			throw new MyRuntimeException("在配置文件中未指定正确的目录路径:clientFilePath");
 		}
-		
-		if(!(new File(pm.getClientFilePath() + pm.getClientFileName()).isFile())){
+
+		if (!(new File(pm.getClientFilePath() + pm.getClientFileName())
+				.isFile())) {
 			// 如果不是文件
-			LOGGER.debug("当前文件：" + pm.getClientFilePath() + pm.getClientFileName());
+			LOGGER.debug("当前文件：" + pm.getClientFilePath()
+					+ pm.getClientFileName());
 			throw new MyRuntimeException("在配置文件中未指定正确的文件路径:clientFileName");
 		}
-		
+
 		bfm.setSeq(1);
 		// 封装文件路径；路径名+文件名
 		bfm.setFilePath(pm.getClientFilePath() + pm.getClientFileName());
@@ -53,9 +63,9 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
-		ByteReturnFileMessage returnMessage = (ByteReturnFileMessage)message;
-		LOGGER.info("返回的序号："+ returnMessage.getSeq());
-		LOGGER.info("服务器返回的消息："+ returnMessage.getReturnMassage());
+		ByteReturnFileMessage returnMessage = (ByteReturnFileMessage) message;
+		LOGGER.info("返回的序号：" + returnMessage.getSeq());
+		LOGGER.info("服务器返回的消息：" + returnMessage.getReturnMassage());
 		session.close(true);
 	}
 
