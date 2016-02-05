@@ -11,6 +11,8 @@
     </bean>
     <!-- 类Bean。注意：这里的propertyName的名字要和类中的属性一致。不然会报错 -->
 	<bean id="propertiesModel" class="com.minafile.model.PropertiesModel">       
-	    <property name="serverFilePath" value="${serverFilePath}" />    
+	    <property name="serverFilePath" value="${serverFilePath}" />
+	    <property name="clientFilePath" value="${clientFilePath}" />  
+	    <property name="clientFileName" value="${clientFileName}" />      
 	</bean> 
 </beans>

@@ -10,7 +10,9 @@ import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactor
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.minafile.codec.ByteProtocalCodecFactory;
 import com.minafile.codec.UploadFileProtocolCodecFactory;
+import com.minafile.handle.client.FileObjectClientHandler;
 import com.minafile.handle.client.FileStreamClientHandler;
 import com.minafile.handle.client.FileUploadClientHandler;
 
@@ -26,17 +28,20 @@ public class Client {
 
     private static final long CONNECT_TIMEOUT = 30*1000L; // 30秒
 
-    private static final boolean USE_CUSTOM_CODEC = true; // 是否是自定义的编码
+    private static final int USE_CUSTOM_CODEC = 2; // 是否是自定义的编码
+    
 
     public static void main(String[] args) throws Throwable {
-        int[] values = new int[50];
-        for(int i = 0;i< 50;++i){
-        	values[i] = i;
-        }
+       
         NioSocketConnector connector = new NioSocketConnector();
-
+        FileStreamClientHandler clientHandler = new FileStreamClientHandler();
         connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-        if (USE_CUSTOM_CODEC) {
+        if (USE_CUSTOM_CODEC == 0) {
+        	 int[] values = new int[50];
+             for(int i = 0;i< 50;++i){
+             	values[i] = i;
+             }
+             
             connector.getFilterChain().addLast(
                     "codec",
                     new ProtocolCodecFilter(
@@ -45,16 +50,28 @@ public class Client {
 
             connector.setHandler(new FileUploadClientHandler(values));
 
-        } else {
+        } else if (USE_CUSTOM_CODEC == 1) {
             connector.getFilterChain().addLast(
                     "codec",
                     new ProtocolCodecFilter(
                             new ObjectSerializationCodecFactory()));
             
             connector.getFilterChain().addLast("logger", new LoggingFilter());
-
-            connector.setHandler(new FileStreamClientHandler());
+            
+            connector.setHandler(clientHandler);
+        }else{
+        	 /*connector.getFilterChain().addLast("logger", new LoggingFilter());
+        	 connector.getFilterChain().addLast(
+                     "codec",
+                     new ProtocolCodecFilter(
+                             new ObjectSerializationCodecFactory()));*/
+        	connector.getFilterChain()
+            .addLast(
+                    "codec",
+                    new ProtocolCodecFilter(new ByteProtocalCodecFactory(false)));
+             connector.setHandler(new FileObjectClientHandler());
         }
+        
        
         IoSession session;
         for (;;) {
@@ -69,7 +86,7 @@ public class Client {
                 Thread.sleep(5000);
             }
         }
-
+        
         session.getCloseFuture().awaitUninterruptibly();
         connector.dispose();
     }
