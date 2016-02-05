@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -13,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.minafile.model.ByteFileMessage;
-import com.minafile.model.ByteFileMessageTransport;
 import com.minafile.model.ByteReturnFileMessage;
-import com.minafile.model.FileMessage;
-import com.minafile.model.FileMessageTransport;
 import com.minafile.model.PropertiesModel;
 import com.minafile.util.ReadProperties;
 

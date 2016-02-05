@@ -1,18 +1,12 @@
 package com.minafile.handle.client;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -23,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.minafile.model.ByteFileMessage;
 import com.minafile.model.ByteFileMessageTransport;
 import com.minafile.model.ByteReturnFileMessage;
-import com.minafile.model.MessageBufferedInputStream;
 import com.minafile.model.PropertiesModel;
 import com.minafile.util.ReadProperties;
 
@@ -42,7 +35,6 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 		PropertiesModel pm = ReadProperties.getModel();
 		File[] files = null;
 		File file = null;
-		MessageBufferedInputStream mbis = new MessageBufferedInputStream();
 		if(pm.getClientFileName().equals("")){
 			file = new File(pm.getClientFilePath());
 			if(file.isFile()){

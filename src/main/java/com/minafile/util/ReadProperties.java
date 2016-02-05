@@ -22,6 +22,11 @@ public class ReadProperties {
 		return d;
 	}
 	
+	/**
+	 * 这个方法暂时未用到。不过这里实现的是通过类加载器进行方法的调用。
+	 * @param fieldName
+	 * @return
+	 */
 	public static String getPropertyByFieldName(String fieldName){
 		if(fieldName != null && !fieldName.equals("")){
 			
