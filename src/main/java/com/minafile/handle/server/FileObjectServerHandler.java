@@ -3,6 +3,7 @@ package com.minafile.handle.server;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -64,7 +65,14 @@ public class FileObjectServerHandler extends IoHandlerAdapter {
 		OutputStream os = null;
 
 		try {
-			os = new ObjectOutputStream(new FileOutputStream(
+			// 用ObjectOutputStream的方式进行保存，打开之后会有乱码现象
+			/*os = new ObjectOutputStream(new FileOutputStream(
+					pm.getServerFilePath() + System.currentTimeMillis()
+							+ fm.getFileName()));
+			os.write(fm.getFileStream());
+			os.flush();*/
+			// 用PrintStream 
+			os = new PrintStream(new FileOutputStream(
 					pm.getServerFilePath() + System.currentTimeMillis()
 							+ fm.getFileName()));
 			os.write(fm.getFileStream());
