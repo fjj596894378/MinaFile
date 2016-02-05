@@ -13,7 +13,7 @@ import com.minafile.model.AbstractMessage;
  * @author king_fu
  *
  */
-public abstract class AbstractMessageDecoder implements MessageDecoder {
+public abstract class AbstractMessageDecoder<T extends AbstractMessage> implements MessageDecoder {
     private final int type;
 
     private int sequence;

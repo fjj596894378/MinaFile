@@ -15,7 +15,9 @@ import org.apache.mina.handler.stream.StreamIoHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.minafile.model.PropertiesModel;
 import com.minafile.util.IoStreamServerThread;
+import com.minafile.util.ReadProperties;
 
 public class FileStreamServerHandler extends StreamIoHandler{
 	private final static Logger LOGGER = LoggerFactory
@@ -24,12 +26,13 @@ public class FileStreamServerHandler extends StreamIoHandler{
 	@Override
 	protected void processStreamIo(IoSession session, InputStream in,
 			OutputStream out) {
-		//省略。
+		// 省略。
 		// 现在需要获取上传文件的文件扩展名。
 		// 但是并没有通过流的解析来获取，可以在session中，由客户端传过来。
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3, 6, 3, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3), new ThreadPoolExecutor.DiscardOldestPolicy());
 		FileOutputStream fos = null;
-		File file =new File("D:\\Serverfile\\" + System.currentTimeMillis() + ".txt"); 
+		PropertiesModel model = ReadProperties.getModel();
+		File file =new File(model.getServerFilePath() + System.currentTimeMillis() + ".txt"); 
 		try {
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
