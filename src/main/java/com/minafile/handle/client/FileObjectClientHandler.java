@@ -1,21 +1,14 @@
 package com.minafile.handle.client;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
-import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.minafile.exception.MyRuntimeException;
 import com.minafile.model.ByteFileMessage;
-import com.minafile.model.ByteFileMessageTransport;
 import com.minafile.model.ByteReturnFileMessage;
 import com.minafile.model.PropertiesModel;
 import com.minafile.util.ReadProperties;
@@ -30,48 +23,24 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		
-		ByteFileMessage fm = new ByteFileMessage();
-		ByteFileMessageTransport fmt = new ByteFileMessageTransport();
+		ByteFileMessage bfm = new ByteFileMessage();
 		PropertiesModel pm = ReadProperties.getModel();
-		File[] files = null;
-		File file = null;
-		if(pm.getClientFileName().equals("")){
-			file = new File(pm.getClientFilePath());
-			if(file.isFile()){
-				// 是一个文件
-				fmt.setDir(false);
-				/*FileInputStream fis = new FileInputStream(file);
-				
-				FileChannel fileChannel = fis.getChannel();
-				LOGGER.info("fileChannel.size()" + fileChannel.size());
-				ByteBuffer bb = ByteBuffer.allocate((int)fileChannel.size());
-				bb.clear();
-				fileChannel.read(bb);
-				fm.setFileName(file.getName());
-				fm.setFileStream(bb.array());
-				
-				IoBuffer ioBuffer = IoBuffer.allocate((int)(fm.getFileName().length() + fileChannel.size()));
-				ioBuffer.setAutoExpand(true);
-				ioBuffer.putString(fm.getFileName(),character);
-				ioBuffer.put(bb);
-				ioBuffer.put(fm.getFileStream());
-				LOGGER.info("send remaining" + ioBuffer.limit());
-				ioBuffer.flip();
-				LOGGER.info("数据已经准备好，准备发送");*/
-				session.write(operateStream(file,1));
-			}else{
-				// 是一个目录
-				fmt.setDir(true); // 文件名为空，表示传输保存的是一个目录
-				files = file.listFiles();
-				for (int i = 0; i < files.length; i++) {
-					session.write(operateStream(files[i],i));
-				}
-			}
-		}else{
-			fmt.setDir(false);
-			file = new File(pm.getClientFilePath() + pm.getClientFileName());
-			session.write(operateStream(file,1));
+		if(!(new File(pm.getClientFilePath()).isDirectory())){
+			// 如果不是目录
+			LOGGER.debug("当前目录：" + pm.getClientFilePath());
+			throw new MyRuntimeException("在配置文件中未指定正确的目录路径:clientFilePath");
 		}
+		
+		if(!(new File(pm.getClientFilePath() + pm.getClientFileName()).isFile())){
+			// 如果不是文件
+			LOGGER.debug("当前文件：" + pm.getClientFilePath() + pm.getClientFileName());
+			throw new MyRuntimeException("在配置文件中未指定正确的文件路径:clientFileName");
+		}
+		
+		bfm.setSeq(1);
+		// 封装文件路径；路径名+文件名
+		bfm.setFilePath(pm.getClientFilePath() + pm.getClientFileName());
+		session.write(bfm);
 	}
 
 	@Override
@@ -93,45 +62,5 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception {
 		LOGGER.info("客户端信息已送達");
-	}
-	
-	private IoBuffer operateStream(File file,int seq) throws IOException{
-		CharsetEncoder character = Charset.forName("UTF-8").newEncoder();
-		ByteFileMessage fm = new ByteFileMessage();
-		FileInputStream fis = new FileInputStream(file);
-		FileChannel fileChannel = fis.getChannel();
-		LOGGER.info("fileChannel.size()" + fileChannel.size());
-		ByteBuffer bb = ByteBuffer.allocate((int)fileChannel.size());
-		bb.clear();
-		fileChannel.read(bb);
-		fm.setSeq(seq);
-		fm.setFileName(file.getName());
-		LOGGER.info("file.getName()" + fm.getFileName());
-		fm.setFileStream(bb.array());
-		
-		IoBuffer ioBuffer = IoBuffer.allocate((int)(4 + 4+4 + fm.getFileName().length() + fileChannel.size()));
-		ioBuffer.setAutoExpand(true);
-		ioBuffer.putInt(fm.getSeq());
-		
-		/*ioBuffer.flip();    
-		ioBuffer.compact(); */
-		ioBuffer.putInt(fm.getFileName().getBytes().length);
-		LOGGER.info("fileChannel.size():" + fileChannel.size());
-		ioBuffer.putString(fm.getFileName(),character);
-		/*ioBuffer.flip();    
-		ioBuffer.compact();*/
-		
-		ioBuffer.putInt((int)fileChannel.size());
-		/*ioBuffer.flip();    
-		ioBuffer.compact();*/
-		
-		LOGGER.info("character:" + character.toString());
-		ioBuffer.put(bb);
-		ioBuffer.put(fm.getFileStream());
-		LOGGER.info("send remaining" + ioBuffer.limit());
-		ioBuffer.flip();
-		LOGGER.info("数据已经准备好，准备发送");
-		
-		return ioBuffer;
 	}
 }

@@ -9,12 +9,13 @@ public class ByteProtocalCodecFactory  implements ProtocolCodecFactory {
 	
 	public ByteProtocalCodecFactory(boolean isServer){
 		if(isServer){
-			encoder = new ByteProtocalEncoder();
-			decoder = new ByteProtocalDecoder();
+			encoder = new ByteResultProtocalEncoder(); // 返回给客户端的消息封装
+			
+			decoder = new ByteProtocalDecoder(); // 解析客户端发来的消息
 		}else{
 			// 客户端
-		//	encoder = new ByteProtocalEncoder();
-			decoder = new ByteResultProtocalDecoder();
+			encoder = new ByteProtocalEncoder();	// 发给服务器的消息封装
+			decoder = new ByteResultProtocalDecoder();	// 对服务器发来的回应信息进行解析
 		}
 		
 	}
