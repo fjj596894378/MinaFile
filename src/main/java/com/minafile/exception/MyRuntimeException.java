@@ -1,5 +1,10 @@
 package com.minafile.exception;
 
+/**
+ * 自定义异常
+ * @author king_fu
+ *
+ */
 public class MyRuntimeException extends RuntimeException{
 
 	/**

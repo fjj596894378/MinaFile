@@ -1,7 +1,6 @@
 package com.minafile.handle.server;
 
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
@@ -16,9 +15,16 @@ import com.minafile.model.ByteReturnFileMessage;
 import com.minafile.model.PropertiesModel;
 import com.minafile.util.ReadProperties;
 
+/**
+ * 当客户端发来消息之后，会先调用自定义的解码器(类)。
+ * 当解码器解码完成之后，再来这里进行业务处理。
+ * 处理完之后（也就是调用write()方法之后），会再调用自定义的编码器(类)
+ * 编码器(类)处理完之后，就发给客户端了。
+ * @author king_fu
+ *
+ */
 public class FileObjectServerHandler extends IoHandlerAdapter {
 
-	private static int BUFF_SIZE = 2048;
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(FileObjectServerHandler.class);
 
@@ -54,27 +60,15 @@ public class FileObjectServerHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
 		ByteFileMessage fm = (ByteFileMessage) message;
-		 
 		PropertiesModel pm = ReadProperties.getModel();
 		OutputStream os = null;
-		InputStream is = null;
-		 
-		/*int tmpdata = 0;
-		byte[] byteBuf = new byte[BUFF_SIZE];*/
-		try {
 
-		//	for (int i = 0; i < fileList.size(); i++) {
-				 
-			//	is = new BufferedInputStream(new FileInputStream(fm.getFileEntry().getPath().toString()));
-				os = new ObjectOutputStream(new FileOutputStream(
-						pm.getServerFilePath() + System.currentTimeMillis()
-								+ fm.getFileName()));
-			/*	while ((tmpdata = is.read(byteBuf)) != -1) {
-					os.write(byteBuf, 0, tmpdata);
-				}*/
-				os.write(fm.getFileStream());
-				os.flush();
-		//	}
+		try {
+			os = new ObjectOutputStream(new FileOutputStream(
+					pm.getServerFilePath() + System.currentTimeMillis()
+							+ fm.getFileName()));
+			os.write(fm.getFileStream());
+			os.flush();
 		} finally {
 			os.close();
 		}

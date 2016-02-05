@@ -18,7 +18,7 @@ import com.minafile.model.ByteFileMessage;
 
 /**
  * 客户端把消息文件实体封装发送给服务器
- * 文件名文件路径在handle中处理
+ * 文件名文件路径在handle中处理 
  * handle从配置文件中获取到对应文件
  * 当把消息封装好之后，发送给服务器，服务器对文件解析。 
  * @author king_fu
