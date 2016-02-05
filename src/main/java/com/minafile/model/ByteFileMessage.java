@@ -20,14 +20,11 @@ public class ByteFileMessage implements Serializable{
 	private static final long serialVersionUID = 2662457203413500892L;
 
 	private int seq; // 序号
-	
 	private String fileName; // 文件名
-	
-	private int fileStreamLength; // 文件长度
-	private int fileNameLength;//图片名字长度
-	
+	private int fileNameLength;//文件名长度
+	private int fileStreamLength; // 文件流长度
 	private byte[] fileStream; // 文件流
-	
+	private String filePath; // 文件路径
 
 	public String getFileName() {
 		return fileName;
@@ -69,5 +66,11 @@ public class ByteFileMessage implements Serializable{
 		this.fileNameLength = fileNameLength;
 	}
 
-	
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 }
