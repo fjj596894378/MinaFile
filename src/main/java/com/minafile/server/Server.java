@@ -17,7 +17,6 @@ public class Server {
     private static final int SERVER_PORT = 8080;
 
     // 是否是自定义的消息。实现接口MessageDecoder。
-    private static final int USE_CUSTOM_CODEC = 2;
 
     public static void main(String[] args) throws Throwable {
         NioSocketAcceptor acceptor = new NioSocketAcceptor();

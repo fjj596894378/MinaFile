@@ -64,7 +64,8 @@ public class ByteProtocalDecoder extends CumulativeProtocolDecoder{
 		LOGGER.info("读取的文件大小：" +  bfm.getFileStreamLength()/1024/1024 + "M"  );
 		in.get(byteValue);
 		bfm.setFileStream(byteValue);
-		LOGGER.info("解析完成"  );
+		//LOGGER.info(new String(). bfm.getFileStream());
+		LOGGER.info("解析完成");
 		return bfm;
     }
     
