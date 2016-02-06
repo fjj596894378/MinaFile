@@ -26,6 +26,10 @@ import com.minafile.model.ByteFileMessage;
 public class ByteProtocalDecoder extends CumulativeProtocolDecoder{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ByteProtocalDecoder.class);
 	public static final int MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1G
+	private boolean isFinish = false; // 是否已经处理所有数据
+	private static boolean isFirst = true; // 是否是第一次进来
+	private ByteFileMessage bfm = new ByteFileMessage(); // 保存对象
+	private static IoBuffer newIoBuffer = IoBuffer.allocate(0).setAutoExpand(true) ;
 	public ByteProtocalDecoder() {
 	}
 
@@ -38,10 +42,18 @@ public class ByteProtocalDecoder extends CumulativeProtocolDecoder{
 		try{
 		 // 这个方法的调用是判断IoBuffer里的数据是否满足一条消息了
 		//	 dataLength = getInt(position());	用绝对值的方式读取，position不会移动。
-		  if (in.prefixedDataAvailable(4, MAX_FILE_SIZE)) {
-			  ByteFileMessage bfm =  this.readFile(in);
-			  out.write(bfm);
+		
+		  if ((!isFirst) || in.prefixedDataAvailable(4, MAX_FILE_SIZE)) {
+			  this.readFile(in);
+			  if(isFinish){
+				  // 解析完成
+				  out.write(bfm);
+			  }else{
+				  return true;
+			  }
+			  
 		  }else{
+			  in.position(0);
 			  LOGGER.info("不符合读取条件");
 			  return false;
 		  }
@@ -52,22 +64,56 @@ public class ByteProtocalDecoder extends CumulativeProtocolDecoder{
 		return true;
 	}
 	
-	private ByteFileMessage readFile(IoBuffer in) throws CharacterCodingException  {
+	private void readFile(IoBuffer in) throws CharacterCodingException  {
 		CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 		in.position(0);
-		ByteFileMessage bfm = new ByteFileMessage();
-		bfm.setSeq(in.getInt()); //序号
-		bfm.setFileNameLength(in.getInt()); // 文件名长度（字节）
-		bfm.setFileName(in.getString(bfm.getFileNameLength(),decoder)); // 文件名。UTF-8格式
-		bfm.setFileStreamLength(in.getInt()); // 文件长度（字节）
-		byte[] byteValue = new byte[bfm.getFileStreamLength()];
-		LOGGER.info("读取的文件大小：" +  bfm.getFileStreamLength()/1024/1024 + "M"  );
-		in.get(byteValue);
-		bfm.setFileStream(byteValue);
+		// ByteFileMessage bfm = new ByteFileMessage();
+		if(isFirst){
+			bfm.setSeq(in.getInt()); //序号
+			bfm.setFileNameLength(in.getInt()); // 文件名长度（字节）
+			bfm.setFileName(in.getString(bfm.getFileNameLength(),decoder)); // 文件名。UTF-8格式
+			bfm.setFileStreamLength(in.getInt()); // 文件长度（字节）
+		}
+		//如果读的文件的长度(字节：比如4096个字节)，远远大于这个缓冲区的容量（最大容量：2048字节），那么需要进行把一个个包黏起来
+		byte[] byteValue = null;
+		if(bfm.getFileStreamLength() > in.limit()){
+			/*int dealDataLen = in.limit(); // 本次要处理的数据长度
+			
+			byteValue = new byte[dealDataLen];*/
+			bfm.setFileStreamLength(bfm.getFileStreamLength() - in.limit());
+			IoBuffer bufTmp = null;
+			if(isFirst){ // 第一次
+				LOGGER.info("【服务器解析】继续接受in：" + in.remaining());
+				bufTmp = IoBuffer.allocate(newIoBuffer.remaining() +in.remaining() ).setAutoExpand(true);
+				isFirst = false;
+			}else{
+				LOGGER.info("【服务器解析】继续接受in：" + in.remaining());
+				bufTmp = IoBuffer.allocate(newIoBuffer.remaining() + in.remaining() ).setAutoExpand(true);
+			}
+			bufTmp.order(newIoBuffer.order());
+			bufTmp.put(newIoBuffer);
+			bufTmp.put(in);
+			bufTmp.flip();
+			newIoBuffer = bufTmp;
+			isFinish = false; // 数据未读取完。
+			LOGGER.info("【服务器解析】未解析数据：" + newIoBuffer.remaining() + "字节");
+		}else{
+			IoBuffer bufTmp = IoBuffer.allocate( newIoBuffer.remaining() + in.remaining() ).setAutoExpand(true);
+			bufTmp.order(newIoBuffer.order());
+			bufTmp.put(newIoBuffer);
+			bufTmp.put(in);
+			bufTmp.flip();
+			newIoBuffer = bufTmp;
+			int remainingData = newIoBuffer.remaining(); // 总共多少
+			LOGGER.info("【服务器解析】文件需要解析多少字节：" + remainingData);
+			byteValue = new byte[remainingData];
+			newIoBuffer.get(byteValue);
+			LOGGER.info("当前读取的文件大小：" +  remainingData/1024 + "KB"  );
+			bfm.setFileStream(byteValue);
+			isFinish = true;
+			LOGGER.info("【服务器解析】解析完成");
+		}
 		//LOGGER.info(new String(). bfm.getFileStream());
-		LOGGER.info("解析完成");
-		return bfm;
+		//return isFinish;
     }
-    
-
 }
