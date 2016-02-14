@@ -82,8 +82,7 @@ public class FileObjectServerHandler extends IoHandlerAdapter {
 		}
 		ByteReturnFileMessage brf = new ByteReturnFileMessage();
 		brf.setSeq(fm.getSeq());
-		brf.setReturnMassage("服务器保存文件完成。");
-		brf.setReturnMassageLength(brf.getReturnMassage().getBytes().length);
+		brf.setReturnMassage(1); // 返回消息 0:成功  1：失败  2：其他
 		session.write(brf);
 
 	}

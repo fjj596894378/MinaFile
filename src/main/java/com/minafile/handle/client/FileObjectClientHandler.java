@@ -3,6 +3,7 @@ package com.minafile.handle.client;
 import java.io.File;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.session.AttributeKey;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,10 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(FileObjectClientHandler.class);
-
 	private int transportNumber; // 传输数量
-
+	private final AttributeKey TRANSPORTCOUNT = new AttributeKey(getClass(), "count"); //传输的总数量
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
-
 		ByteFileMessage bfm = new ByteFileMessage();
 		PropertiesModel pm = ReadProperties.getModel();
 		File fileDir = new File(pm.getClientFilePath());
@@ -44,6 +43,7 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 			// 就表示传输的是整个目录
 			File[] files = fileDir.listFiles();
 			transportNumber = files.length;
+			session.setAttribute(TRANSPORTCOUNT, transportNumber);
 			for (int i = 0; i < files.length; i++) {
 				LOGGER.info("序号：【" + i + "】文件名：【" + files[i].getName()+"】加进队列中");
 				bfm.setSeq(i);
@@ -60,6 +60,7 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 				throw new MyRuntimeException("在配置文件中未指定正确的文件路径:clientFileName");
 			}
 			transportNumber = 1;
+			session.setAttribute(TRANSPORTCOUNT, transportNumber);
 			bfm.setSeq(0);
 			// 封装文件路径；路径名+文件名
 			bfm.setFilePath(pm.getClientFilePath() + pm.getClientFileName());
@@ -79,7 +80,8 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 			throws Exception {
 		ByteReturnFileMessage returnMessage = (ByteReturnFileMessage) message;
 		LOGGER.info("返回的序号：" + returnMessage.getSeq());
-		LOGGER.info("服务器返回的消息：" + returnMessage.getReturnMassage());
+		LOGGER.info("服务器返回的消息：" + (returnMessage.getReturnMassage() == 1 ? "成功"
+				: returnMessage.getReturnMassage() == 2 ? "失败" : "其它"));
 		// 剩下最后一个才进行session的关闭
 		if (returnMessage.getSeq() == transportNumber - 1) {
 			// 如果是最后一个

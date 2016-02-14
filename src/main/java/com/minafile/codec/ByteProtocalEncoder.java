@@ -6,8 +6,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.Random;
+
+import javax.swing.plaf.SliderUI;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.session.AttributeKey;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
@@ -27,11 +31,17 @@ import com.minafile.model.ByteFileMessage;
 public class ByteProtocalEncoder extends ProtocolEncoderAdapter {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ByteProtocalEncoder.class);
-
+	// private  AttributeKey TRANSPORTDATA = new AttributeKey(getClass(), "transportData"); //传输的总字节数
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
 		LOGGER.info("客户端开始编码，准备发往服务器……");
+	/*	int s = (Integer)session.getAttribute("count");
+		LOGGER.info("客户端将要发送" + s);
+		int i = new Random().nextInt(10);
+		if(i % 2 == 0){
+			Thread.sleep(1000);
+		}*/
 		CharsetEncoder character = Charset.forName("UTF-8").newEncoder();
 		ByteFileMessage bfm = (ByteFileMessage) message;
 		// 输入流
@@ -52,12 +62,18 @@ public class ByteProtocalEncoder extends ProtocolEncoderAdapter {
 				(int) channel.size() + 12 + bfm.getFileName().getBytes().length
 						+ bfm.getFilePath().getBytes().length).setAutoExpand(
 				true);
-		ioBuffer.putInt(bfm.getSeq()); // 序号
+		LOGGER.info("【客户端】文件大小：" + channel.size());
+		LOGGER.info("【客户端】文件名大小：" + bfm.getFileName().getBytes().length);
 		ioBuffer.putInt(bfm.getFileName().getBytes().length);
-		ioBuffer.putString(bfm.getFileName(),character); // 文件名
 		ioBuffer.putInt((int)channel.size());
+		
+		ioBuffer.putString(bfm.getFileName(),character); // 文件名
+		ioBuffer.putInt(bfm.getSeq()); // 序号
 		ioBuffer.put(byteBuffer);
 		ioBuffer.put(byteBuffer.array()); // bfm.getFileStream()
+		
+		
+		
 		ioBuffer.flip();
 		
 		out.write(ioBuffer);

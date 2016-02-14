@@ -21,9 +21,7 @@ public class ByteReturnFileMessage implements Serializable{
 
 	private int seq; // 序号
 	
-	private String returnMassage; // 文件名
-	
-	private int returnMassageLength;//图片名字长度
+	private int returnMassage; // 返回消息 0:成功  1：失败  2：其他
 	
 	public int getSeq() {
 		return seq;
@@ -33,19 +31,11 @@ public class ByteReturnFileMessage implements Serializable{
 		this.seq = seq;
 	}
 
-	public String getReturnMassage() {
+	public int getReturnMassage() {
 		return returnMassage;
 	}
 
-	public void setReturnMassage(String returnMassage) {
+	public void setReturnMassage(int returnMassage) {
 		this.returnMassage = returnMassage;
-	}
-
-	public int getReturnMassageLength() {
-		return returnMassageLength;
-	}
-
-	public void setReturnMassageLength(int returnMassageLength) {
-		this.returnMassageLength = returnMassageLength;
 	}
 }
