@@ -26,8 +26,6 @@ public class Client {
 
 	private static final long CONNECT_TIMEOUT = 30 * 1000L; // 30秒
 
-	private static final int USE_CUSTOM_CODEC = 2; // 是否是自定义的编码
-
 	public static void main(String[] args) throws Throwable {
 
 		NioSocketConnector connector = new NioSocketConnector();
