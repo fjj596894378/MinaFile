@@ -44,7 +44,7 @@ public class ByteProtocalDecoder extends CumulativeProtocolDecoder {
 		try {
 			// 这个方法的调用是判断IoBuffer里的数据是否满足一条消息了
 			// dataLength = getInt(position()); 用绝对值的方式读取，position不会移动。
-
+ 
 			this.readFile(in);
 			if (isFinish) {
 				// 解析完成
@@ -117,6 +117,5 @@ public class ByteProtocalDecoder extends CumulativeProtocolDecoder {
 		isFinish = false; // 是否已经处理所有数据
 		isFirst = true; // 是否是第一次进来
 		bfm = new ByteFileMessage(); // 保存对象
-		// newIoBuffer = IoBuffer.allocate(0).setAutoExpand(true) ;
 	}
 }
