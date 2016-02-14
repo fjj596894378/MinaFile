@@ -48,6 +48,7 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 				LOGGER.info("序号：【" + i + "】文件名：【" + files[i].getName()+"】加进队列中");
 				bfm.setSeq(i);
 				bfm.setFilePath(files[i].getPath());
+				session.write(bfm);
 			}
 		} else {
 			// 不为空，那就代表传输单个文件
@@ -62,10 +63,8 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 			bfm.setSeq(0);
 			// 封装文件路径；路径名+文件名
 			bfm.setFilePath(pm.getClientFilePath() + pm.getClientFileName());
+			session.write(bfm);
 		}
-		
-		
-		session.write(bfm);
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class FileObjectClientHandler extends IoHandlerAdapter {
 		// 剩下最后一个才进行session的关闭
 		if (returnMessage.getSeq() == transportNumber - 1) {
 			// 如果是最后一个
-			LOGGER.info("客户端自动关闭：" + returnMessage.getReturnMassage());
+			LOGGER.info("客户端自动关闭：所有发往服务器请求已保存成功");
 			session.close(true);
 		}
 
